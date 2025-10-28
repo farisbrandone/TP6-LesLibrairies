@@ -2,82 +2,71 @@
 CC = gcc
 CFLAGS = -g -Wall -Wextra -fPIC
 LDFLAGS = -shared
-LIBS = -lm
 AR = ar
 ARFLAGS = rcs
 
 # Directories
 SRC_DIR = src
+LIB_DIR_STAT = $(SRC_DIR)/lib/calculatriceStat
+LIB_DIR_DYN = $(SRC_DIR)/lib/calculatriceDyn
 LIB_DIR = $(SRC_DIR)/lib
 BUILD_DIR = $(SRC_DIR)/build
 BIN_DIR = $(SRC_DIR)/bin
-INCLUDE= $(SRC_DIR)/include
 
 # Include paths for libraries
-LIB_INCLUDES = -I $(SRC_DIR)/include
-
-# Include paths for main application
-MAIN_INCLUDES = -I $(LIB_DIR)
-
+LIB_INCLUDES = -I $(LIB_DIR)
 
 # Library targets
-LIBRARIES = calculatrice
-LIB_OBJECTS = $(BUILD_DIR)/calculatrice.o
-LIB_SO_FILES = $(LIB_DIR)/calculatrice.so
-
-#LIB_A_FILES = $(LIB_DIR)/calculatrice.a
+LIB_STATIC = $(LIB_DIR_STAT)/libcalculatriceStat.a
+LIB_DYNAMIC = $(LIB_DIR_DYN)/libcalculatriceDyn.so
 
 # Main application
 MAIN_OBJ = $(BUILD_DIR)/main.o
-EXECUTABLE = $(BIN_DIR)/exeWithDynLib
-EXECUTABLE2 = $(BIN_DIR)/exeWithStatLib
-
+EXECUTABLE = $(BIN_DIR)/exe
 
 # Default target
-all: $(EXECUTABLE) $(EXECUTABLE2)
+all: $(EXECUTABLE)
 
 # Create executable
-$(EXECUTABLE): $(MAIN_OBJ) $(LIB_SO_FILES) $(LIBS) $(LIB_DIR)
-	$(CC) -g -o $@ $(MAIN_OBJ) \
-	    -I $(LIB_DIR) \
-	    $(LIB_SO_FILES) \
-	    $(LIBS)
-
-$(EXECUTABLE2): $(MAIN_OBJ) $(LIB_OBJECTS) $(LIB_DIR) $(LIBS)
+$(EXECUTABLE): $(MAIN_OBJ) $(LIB_STATIC) $(LIB_DYNAMIC)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $(MAIN_OBJ) \
-		-L.$(LIB_DIR) -l:calculatrice.a \
-		$(LIBS)
-
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(MAIN_OBJ) \
+		-L$(LIB_DIR_STAT) -lcalculatriceStat \
+		-L$(LIB_DIR_DYN) -lcalculatriceDyn \
+		-Wl,-rpath,$(LIB_DIR_DYN)
 
 # Main object file
 $(BUILD_DIR)/main.o: $(SRC_DIR)/app/main.c
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(LIB_INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) -I $(LIB_DIR_STAT) -I $(LIB_DIR_DYN) -c $< -o $@
 
-# evalRpn shared library
-$(LIB_SO_FILES): $(BUILD_DIR)/calculatrice.o
-	@mkdir -p $(LIB_DIR)
-	$(CC) $(LDFLAGS) -o $@ $< $(LIBS)
+# Static library
+$(LIB_STATIC): $(BUILD_DIR)/calculatriceStat.o
+	@mkdir -p $(LIB_DIR_STAT)
+	$(AR) $(ARFLAGS) $@ $<
 
+# Dynamic library
+$(LIB_DYNAMIC): $(BUILD_DIR)/calculatriceDyn.o
+	@mkdir -p $(LIB_DIR_DYN)
+	$(CC) $(LDFLAGS) -o $@ $<
 
-
-$(BUILD_DIR)/calculatrice.o: $(INCLUDE)/calculatrice.c
+# Object files
+$(BUILD_DIR)/calculatriceStat.o: $(LIB_DIR_STAT)/calculatriceStat.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(LIB_DIR)/calculatrice.a: $(BUILD_DIR)/calculatrice.o
-	@mkdir -p $(LIB_DIR)
-	$(AR) $(ARFLAGS) $@ $<
+$(BUILD_DIR)/calculatriceDyn.o: $(LIB_DIR_DYN)/calculatriceDyn.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Run the program
-run: $(EXECUTABLE2)
-	LD_LIBRARY_PATH=$(LIB_DIR) ./$(EXECUTABLE2)
+run: $(EXECUTABLE)
+	./$(EXECUTABLE)
 
 # Install libraries to system path (optional)
-install: $(LIB_SO_FILES)
+install: $(LIB_DYNAMIC)
 	@echo "Installing shared libraries to /usr/local/lib/"
-	sudo cp $(LIB_DIR)
+	sudo cp $(LIB_DYNAMIC) /usr/local/lib/
 	sudo ldconfig
 
 # Clean build artifacts
@@ -91,8 +80,8 @@ tree:
 
 # Debug info
 debug:
-	@echo "Library objects: $(LIB_OBJECTS)"
-	@echo "Shared libraries: $(LIB_SO_FILES)"
+	@echo "Static library: $(LIB_STATIC)"
+	@echo "Dynamic library: $(LIB_DYNAMIC)"
 	@echo "Main object: $(MAIN_OBJ)"
 	@echo "Executable: $(EXECUTABLE)"
 
