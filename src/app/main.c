@@ -1,4 +1,5 @@
-#include "calculatrice.h"
+#include "calculatriceStat.h"
+#include "calculatriceDyn.h"
 #include <stdio.h>
 
 int main() {
@@ -24,7 +25,8 @@ int main() {
         }
 
         // Exécution of opération
-        executerCalcul(operateur, a, b);
+        executerCalculStat(operateur, a, b);
+        executerCalculDyn(operateur, a, b);
     }
 
     printf("Au revoir!\n");

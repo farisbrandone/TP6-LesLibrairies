@@ -1,4 +1,4 @@
-#include "calculatrice.h"
+#include "calculatriceDyn.h"
 #include <stdio.h>
 
 double addition(double a, double b) {
@@ -22,7 +22,7 @@ double division(double a, double b) {
     }
 }
 
-void executerCalcul(char operateur, double a, double b) {
+void executerCalculDyn(char operateur, double a, double b) {
     double resultat;
 
     switch(operateur) {
