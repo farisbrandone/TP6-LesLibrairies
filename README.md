@@ -48,10 +48,12 @@ gcc -g src/build/main.o -o src/bin/exeLibDynFile \
 
 ```
 
-## 🚀 Image associée a l'éxécution des Commandes manuelles pour compilation
-![Second Branch](./image/commandeWithMakefile.png)
+## 🚀 Image associée au test
+![Second Branch](./image/image-make.png)
 
-## 🚀 Image montrant la taille des exécutable associée au librairie statique et dynamique
+<!-- Ceci est un commentaire HTML intégré dans un fichier .md
+
+ ## 🚀 Image montrant la taille des exécutable associée au librairie statique et dynamique
 ![Second Branch](./image/CaptureTailleExe.png)
 
 On constate que sur l'Image que:
@@ -65,4 +67,7 @@ au cas statique qui integre dans son exécutable la lib statique
 ![Second Branch](./image/ResultatStat.png)
 
 ![Second Branch](./image/ResultatDyn.png)
+-->
+
+
 
