@@ -25,26 +25,34 @@ elles permettent une gestion plus efficace de la mémoire et des mises à jour p
 ## 🚀 Commande manuelle pour la compilation associée aux librairies statique
 
 ```bash
-gcc -g -c src/include/calculatrice.c -o src/build/calculatrice.o
-ar rcs src/lib/calculatrice.a src/build/calculatrice.o
-gcc -shared -o src/lib/calculatrice.so src/build/calculatrice.o -lm
+# Fichier objet principal
+gcc -g -Wall -Wextra -fPIC -I src/lib/calculatriceStat -I src/lib/calculatriceDyn -c src/app/main.c -o src/build/main.o
 
+# Fichier objet de la bibliothèque statique
+gcc -g -Wall -Wextra -fPIC -c src/lib/calculatriceStat/calculatriceStat.c -o src/build/calculatriceStat.o
 
-gcc -g -I./src/include -c src/app/main.c -o src/build/main.o
+# Fichier objet de la bibliothèque dynamique
+gcc -g -Wall -Wextra -fPIC -c src/lib/calculatriceDyn/calculatriceDyn.c -o src/build/calculatriceDyn.o
 
+# Bibliothèque statique (.a)
+ar rcs src/lib/calculatriceStat/libcalculatriceStat.a src/build/calculatriceStat.o
 
-gcc -g src/build/main.o -o src/bin/exeLibStatFile \
-    -L./src/lib -l:calculatrice.a\
-    -lm
+# Bibliothèque dynamique (.so)
+gcc -shared -o src/lib/calculatriceDyn/libcalculatriceDyn.so src/build/calculatriceDyn.o
 
-gcc -g src/build/main.o -o src/bin/exeLibDynFile \
-    -I src/lib \
-    src/lib/calculatrice.so \
-    -lm
+gcc -g -Wall -Wextra -o src/bin/exe src/build/main.o \
+    -Lsrc/lib/calculatriceStat -lcalculatriceStat \
+    -Lsrc/lib/calculatriceDyn -lcalculatriceDyn \
+    -Wl,-rpath,src/lib/calculatriceDyn
 
+ ./src/bin/exe
 
- ./src/bin/exeLibStatFile
- ./src/bin/exeLibDynFile
+ # Vérifier les bibliothèques liées
+ldd src/bin/exe
+
+# Vérifier le contenu de la bibliothèque statique
+ar -t src/lib/calculatriceStat/libcalculatriceStat.a
+
 
 ```
 
