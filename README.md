@@ -55,21 +55,8 @@ ar -t src/lib/calculatriceStat/libcalculatriceStat.a
 
 ```
 
-## 🚀 Image associée a l'éxécution des Commandes manuelles pour compilation
-![Second Branch](./image/CaptureCommandeManuelle.png)
-
-## 🚀 Image montrant la taille des exécutable associée au librairie statique et dynamique
-![Second Branch](./image/CaptureTailleExe.png)
-
-On constate que sur l'Image que:
-- La taille de l'Exécutable intégrant la lib statique est de 19ko et celle associé à \
-la lib Dynamique est de 18Ko ce qui démontre que les exécutable utilisant une lib dynamique \
-sont plus legère car celle n'integre pas dans leur exécutable la lib dynamique contrairement \
-au cas statique qui integre dans son exécutable la lib statique
+## 🚀 Image associée à la compilation
+![Second Branch](./image/image-main.png)
 
 
-## 🚀 Résultat
-![Second Branch](./image/ResultatStat.png)
-
-![Second Branch](./image/ResultatDyn.png)
 
